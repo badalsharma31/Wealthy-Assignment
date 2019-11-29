@@ -4,3 +4,6 @@
 
 1. npm i;
 2. npm run start
+
+//deployed on
+https://badalsharma31.github.io/Wealthy-Assignment/
