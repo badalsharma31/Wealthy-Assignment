@@ -1,7 +1,7 @@
 <template>
   <div class="chartContainer">
     <div class="firstPart">
-      Rs {{ maxiumProfit.maxiumProfit }}
+      Rs {{ maxiumProfit.maxiumProfit * 10 }}
       <p>Max Profit</p>
     </div>
     <div class="secondPart">
