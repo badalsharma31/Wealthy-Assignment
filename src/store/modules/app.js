@@ -50,14 +50,24 @@ const getters = {
     let maxDiff = processedData[1] - processedData[0];
     let buyDate = processDate[0];
     let sellDate = processDate[0];
+    let minElement = processedData[0];
+    let minElementIndex = 0;
     for (let i in processedData) {
-      for (let j = i + 1; j < processedData.length; j++) {
-        if (processedData[j] - processedData[i] > maxDiff) {
-          buyDate = processDate[i];
-          sellDate = processDate[j];
-          maxDiff = processedData[j] - processedData[i];
-        }
+      if (processedData[i] - minElement > maxDiff) {
+        buyDate = processDate[minElementIndex];
+        sellDate = processDate[i];
+        maxDiff = processedData[i] - minElement;
       }
+      if (processedData[i] < minElement) {
+        minElement = processedData[i];
+        minElementIndex = i;
+      }
+    }
+
+    if (maxDiff < 0) {
+      maxDiff = 0;
+      buyDate = processDate[0];
+      sellDate = processDate[0];
     }
     return {
       maxiumProfit: maxDiff,
@@ -75,7 +85,7 @@ const getters = {
     return idObj;
   },
   getIdIndex(state) {
-    return function(id) {
+    return function (id) {
       let index = state.stockData.findIndex(item => {
         return item.id === id;
       });
@@ -97,18 +107,7 @@ const actions = {
       })
       .eachPage(
         function page(records, fetchNextPage) {
-          // This function (`page`) will get called for each page of records.
-          // let priceObj = {};
           store.commit("setStockData", records);
-          // if (state.stockData) {
-          //   for (let obj of state.stockData) {
-          //     priceObj[obj.fields.Date] = obj.fields.price;
-          //   }
-          // }
-          // Vue.set(state, "dateWisePrice", priceObj);
-          // To fetch the next page of records, call `fetchNextPage`.
-          // If there are more records, `page` will get called again.
-          // If there are no more records, `done` will get called.
           fetchNextPage();
         },
         function done(err) {
@@ -134,7 +133,7 @@ const actions = {
           }
         }
       ],
-      function(err, records) {
+      function (err, records) {
         if (err) {
           console.error(err);
           return;
@@ -154,12 +153,11 @@ const actions = {
         Date: record.date,
         Price: record.price
       },
-      function(err, record) {
+      function (err, record) {
         if (err) {
           console.error(err);
           return;
         }
-        console.log(record.getId());
       }
     );
   },
@@ -170,12 +168,11 @@ const actions = {
       "appVRttziDgHS96xT"
     );
 
-    base("StockPrice").destroy(id, function(err, deletedRecord) {
+    base("StockPrice").destroy(id, function (err, deletedRecord) {
       if (err) {
         console.error(err);
         return;
       }
-      console.log("delete record is +++++++++", deletedRecord);
       store.commit("deleteRecord", index);
     });
   }
